@@ -21,19 +21,25 @@ package net.mcsproject.daemon;
 import lombok.extern.log4j.Log4j2;
 import net.mcsproject.daemon.libs.log4j.OutErrLogger;
 import net.mcsproject.daemon.network.NetClient;
+import net.mcsproject.daemon.utils.Logging;
 
 @Log4j2
 public class Daemon {
 
 	private static Daemon instance;
 
-	private Daemon() {
+	private Daemon(String[] args) {
 		instance = this;
 		if (System.console() == null) {
 			log.error("Not supported Console, Use -console parameter");
 			return;
 		}
 		OutErrLogger.setOutAndErrToLog();
+
+		Arguments arguments = new Arguments(args);
+		if (arguments.isDebug()) {
+			this.enableDebug();
+		}
 
 		log.info("Starting daemon...");
 
@@ -43,7 +49,12 @@ public class Daemon {
 	}
 
 	public static void main(String[] args) {
-		new Daemon();
+		new Daemon(args);
+	}
+
+	private void enableDebug() {
+		Logging.enableDebug();
+		log.info("Debugging mode is enabled");
 	}
 
 }
